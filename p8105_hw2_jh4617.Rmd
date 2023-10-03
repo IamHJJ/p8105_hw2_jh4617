@@ -102,7 +102,7 @@ problem1_df
 mr.trash = 
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 1) |>
   janitor::clean_names() |>
-  mutate(home_powered_new = weight_tons*500/30) |>
+  mutate(home_powered_mr.trash = weight_tons*500/30) |>
   drop_na(dumpster)
 
 mr.trash
@@ -112,7 +112,7 @@ mr.trash
 professor_trash = 
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 2) |>
   janitor::clean_names() |>
-  mutate(home_powered_new = weight_tons*500/30) |>
+  mutate(home_powered_professor = weight_tons*500/30) |>
   mutate(year = as.character(year))
 
 professor_trash
@@ -120,7 +120,7 @@ professor_trash
 gwynnda_trash = 
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 4) |>
   janitor::clean_names() |>
-  mutate(home_powered_new = weight_tons*500/30) |>
+  mutate(home_powered_gwynnda = weight_tons*500/30) |>
   mutate(year = as.character(year))
 
 gwynnda_trash
@@ -129,7 +129,7 @@ gwynnda_trash
 ```{r merge files}
 trash_df =
   left_join(mr.trash, professor_trash) |>
-  left_join(gwynnda_trash, copy = TRUE
+  left_join(gwynnda_trash, copy = TRUE)
 ```
 
 
