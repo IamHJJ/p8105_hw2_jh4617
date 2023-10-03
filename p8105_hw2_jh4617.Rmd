@@ -14,6 +14,8 @@ library(readxl)
 
 # Problem 1
 
+Clean *pols* dataframe
+
 ```{r clean pols_month}
 pols = 
   read_csv("fivethirtyeight_datasets/pols-month.csv") |>
@@ -38,6 +40,8 @@ pols =
     
 head(pols)
 ```
+
+Clean *snp* dataframe
 
 ```{r clean snp}
 snp = 
@@ -71,6 +75,8 @@ tail(snp)
 
 ```
 
+Clean *unemployment* dataframe
+
 ```{r clean unemployment}
 unemployment = 
   read_csv("fivethirtyeight_datasets/unemployment.csv") |>
@@ -86,6 +92,8 @@ head(unemployment)
 tail(unemployment)
 ```
 
+Merge *pols*, *snp*, and *unemployment* dataframes together
+
 ```{r}
 problem1_df = left_join(pols, snp) |> 
   left_join(unemployment, copy = TRUE)
@@ -98,6 +106,8 @@ problem1_df
 
 # Problem 2
 
+Clean *Mr.trash* dataframe
+
 ```{r mr.trash}
 mr.trash = 
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 1) |>
@@ -107,6 +117,8 @@ mr.trash =
 
 mr.trash
 ```
+
+Clean *professor_trash* and *gwynnada_trash* dataframe
 
 ```{r other trash}
 professor_trash = 
@@ -128,6 +140,8 @@ gwynnda_trash =
 gwynnda_trash
 ```
 
+Merage *mr.trash*, *professor_trash*, and *gwynnda_trash* dataframes
+
 ```{r merge files}
 trash_df =
   left_join(mr.trash, professor_trash) |>
@@ -145,7 +159,11 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is
   sum(pull(gwynnda_trash_filtered, cigarette_butts)) `.
   
   
+# problem 3
 
+```{r}
+
+```
 
 
 
