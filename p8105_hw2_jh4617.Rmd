@@ -1,0 +1,139 @@
+---
+title: "p8105_hw2_jh4617"
+author: "Junjie Hu"
+date: "2023-10-01"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+# Problem 1
+
+```{r clean pols_month}
+pols = 
+  read_csv("fivethirtyeight_datasets/pols-month.csv") |>
+  janitor::clean_names() |>
+  separate(mon, into = c("year", "month", "day") )|>
+  mutate(president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
+  mutate(month = recode(month,
+                        "01" = "jan",
+                        "02" = "feb",
+                        "03" = "mar",
+                        "04" = "apr",
+                        "05" = "may",
+                        "06" = "jun",
+                        "07" = "jul",
+                        "08" = "aug",
+                        "09" = "sep",
+                        "10" = "oct",
+                        "11" = "nov",
+                        "12" = "dec")) |>
+  select(-prez_dem, -prez_gop, -day) |>
+  arrange (year, month)
+    
+head(pols)
+```
+
+```{r clean snp}
+snp = 
+  read_csv("fivethirtyeight_datasets/snp.csv") |>
+  janitor::clean_names() |>
+  mutate(date = as.Date(date, format = "%m/%d/%y")) |>
+  separate(date, into = c("year", "month", "day")) |>
+  mutate(year = as.numeric(year), month = as.numeric(month)) |>
+  mutate(year = ifelse(year > as.integer(format(Sys.Date(),"%Y")),
+                       year - 100, year)) |>
+  mutate(month = recode(month,
+                        "1" = "jan",
+                        "2" = "feb",
+                        "3" = "mar",
+                        "4" = "apr",
+                        "5" = "may",
+                        "6" = "jun",
+                        "7" = "jul",
+                        "8" = "aug",
+                        "9" = "sep",
+                        "10" = "oct",
+                        "11" = "nov",
+                        "12" = "dec"))|>
+  select(-day) |>
+  arrange(year, month) |>
+  mutate(year = as.character(year))
+
+head(snp)
+tail(snp)
+
+
+```
+
+```{r clean unemployment}
+unemployment = 
+  read_csv("fivethirtyeight_datasets/unemployment.csv") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    jan:dec, 
+    names_to = "month",
+    values_to = "unemployment") |> 
+  select(year, month, unemployment) |>
+  mutate(year = as.character(year))
+
+head(unemployment)
+tail(unemployment)
+```
+
+```{r}
+problem1_df = left_join(pols, snp) |> 
+  left_join(unemployment, copy = TRUE)
+
+problem1_df
+```
+
+
+
+
+# Problem 2
+
+```{r mr.trash}
+mr.trash = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 1) |>
+  janitor::clean_names() |>
+  mutate(home_powered_new = weight_tons*500/30) |>
+  select (month, year, date, weight_tons, home_powered_new) 
+
+mr.trash
+```
+
+```{r other trash}
+professor_trash = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 2) |>
+  janitor::clean_names() |>
+  mutate(home_powered_new = weight_tons*500/30) |>
+  mutate(year = as.character(year))
+
+professor_trash
+
+gwynnda_trash = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 4) |>
+  janitor::clean_names() |>
+  mutate(home_powered_new = weight_tons*500/30) |>
+  mutate(year = as.character(year))
+
+gwynnda_trash
+```
+
+```{r merge files}
+trash_df =
+  left_join(mr.trash, professor_trash) |>
+  left_join(gwynnda_trash, copy = TRUE)
+
+trash_df
+```
+
+
+
+
+
+
