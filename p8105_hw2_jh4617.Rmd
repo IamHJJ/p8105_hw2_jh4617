@@ -3,6 +3,8 @@ title: "p8105_hw2_jh4617"
 author: "Junjie Hu"
 date: "2023-10-01"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -101,7 +103,7 @@ mr.trash =
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 1) |>
   janitor::clean_names() |>
   mutate(home_powered_new = weight_tons*500/30) |>
-  select (month, year, date, weight_tons, home_powered_new) 
+  drop_na(dumpster)
 
 mr.trash
 ```
@@ -127,10 +129,10 @@ gwynnda_trash
 ```{r merge files}
 trash_df =
   left_join(mr.trash, professor_trash) |>
-  left_join(gwynnda_trash, copy = TRUE)
-
-trash_df
+  left_join(gwynnda_trash, copy = TRUE
 ```
+
+
 
 
 
