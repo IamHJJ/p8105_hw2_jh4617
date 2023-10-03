@@ -113,7 +113,8 @@ professor_trash =
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 2) |>
   janitor::clean_names() |>
   mutate(home_powered_professor = weight_tons*500/30) |>
-  mutate(year = as.character(year))
+  mutate(year = as.character(year)) |>
+  drop_na(dumpster)
 
 professor_trash
 
@@ -121,7 +122,8 @@ gwynnda_trash =
   read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 4) |>
   janitor::clean_names() |>
   mutate(home_powered_gwynnda = weight_tons*500/30) |>
-  mutate(year = as.character(year))
+  mutate(year = as.character(year)) |>
+  drop_na(dumpster)
 
 gwynnda_trash
 ```
@@ -131,6 +133,20 @@ trash_df =
   left_join(mr.trash, professor_trash) |>
   left_join(gwynnda_trash, copy = TRUE)
 ```
+
+There are `r nrow(trash_df)` observations in resulting data, including key variables `r names(trash_df)`. 
+
+The total weight of trash collected by Professor Trash Wheel is `r sum(pull(professor_trash, weight_tons))`. 
+
+The total number of cigarette butts collected by Gwynnda in July of 2021 is 
+`r gwynnda_trash_filtered =
+  gwynnda_trash |>
+  filter(year == "2021", month == "July") 
+  sum(pull(gwynnda_trash_filtered, cigarette_butts)) `.
+  
+  
+
+
 
 
 
