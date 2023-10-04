@@ -4,7 +4,7 @@ author: "Junjie Hu"
 date: "2023-10-01"
 output: github_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -110,9 +110,9 @@ Clean *Mr.trash* dataframe
 
 ```{r mr.trash}
 mr.trash = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 1) |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 1) |>
   janitor::clean_names() |>
-  mutate(home_powered_mr.trash = weight_tons*500/30) |>
+  mutate(homes_powered = weight_tons*500/30) |>
   drop_na(dumpster)
 
 mr.trash
@@ -122,18 +122,18 @@ Clean *professor_trash* and *gwynnada_trash* dataframe
 
 ```{r other trash}
 professor_trash = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 2) |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 2) |>
   janitor::clean_names() |>
-  mutate(home_powered_professor = weight_tons*500/30) |>
+  mutate(homes_powered = weight_tons*500/30) |>
   mutate(year = as.character(year)) |>
   drop_na(dumpster)
 
 professor_trash
 
 gwynnda_trash = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx", sheet = 4) |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 4) |>
   janitor::clean_names() |>
-  mutate(home_powered_gwynnda = weight_tons*500/30) |>
+  mutate(homes_powered = weight_tons*500/30) |>
   mutate(year = as.character(year)) |>
   drop_na(dumpster)
 
@@ -144,11 +144,20 @@ Merage *mr.trash*, *professor_trash*, and *gwynnda_trash* dataframes
 
 ```{r merge files}
 trash_df =
-  left_join(mr.trash, professor_trash) |>
-  left_join(gwynnda_trash, copy = TRUE)
+  full_join(mr.trash, professor_trash) |>
+  full_join(gwynnda_trash, copy = TRUE) |>
+  select(-x15, -x16)
+
+trash_df
 ```
 
-There are `r nrow(trash_df)` observations in resulting data, including key variables `r names(trash_df)`. 
+There are `r nrow(mr.trash)` observations in the Mr.trash file.
+
+There are `r nrow(professor_trash)` observations in the professor_trash file.
+
+There are `r nrow(gwynnda_trash)` observations in the gwynnda_trash file.
+
+There are `r nrow(trash_df)` observations in merged data, including `r ncol(trash_df)` variables and key variables `r names(trash_df)`. 
 
 The total weight of trash collected by Professor Trash Wheel is `r sum(pull(professor_trash, weight_tons))`. 
 
@@ -157,8 +166,7 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is
   gwynnda_trash |>
   filter(year == "2021", month == "July") 
   sum(pull(gwynnda_trash_filtered, cigarette_butts)) `.
-  
-  `r gwynnda_trash |> filter(year == "2021", month == "July") |> sum(cigarette_butts)`
+
   
 # problem 3
 
@@ -169,22 +177,39 @@ MCI_baseline =
   read.csv("data_mci/MCI_baseline.csv")|>
   slice(-1) |>
   magrittr::set_colnames(c("ID", "current_age", "sex", "education", "apoe4", "age_at_onset"))|>
-  janitor::clean_names() 
+  janitor::clean_names() |>
+  mutate(age_at_onset = ifelse(age_at_onset == ".", NA, age_at_onset),
+         current_age = as.numeric(current_age),
+         age_at_onset = as.numeric(age_at_onset),
+         sex = recode(sex, "0" = "male", "1" = "female"), 
+         apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier")) |>
+  filter(current_age < age_at_onset | is.na(age_at_onset))
+```
 
+```{r echo = FALSE}
+MCI_baseline_onset = 
+  MCI_baseline |>
+  filter(current_age < age_at_onset)
 
-head(MCI_baseline)
+MCI_baseline_female =
+  MCI_baseline |>
+  filter(sex == "female")
+
+MCI_baseline_female_apoe =
+  MCI_baseline_female |>
+  filter(apoe4 == "carrier")
 ```
 
 There are `r nrow(MCI_baseline)` participants were recruited.
 
-Of the recruited participants, `r MCI_baseline |> filter(!is.na(age_at_onset)) |> nrow()`.
+Of the recruited participants, `r nrow(MCI_baseline_onset)` participants have developed MCI.
 
-The average baseline age is `r mean(pull(MCI_baseline, Age_at_study_baseline))`
+The average baseline age is `r mean(pull(MCI_baseline, current_age))`.
 
-There are `r ` of women in the study are APOE4 carriers.
+There are `r nrow(MCI_baseline_female_apoe) / nrow(MCI_baseline_female) *100` % of women in the study are APOE4 carriers.
  
  
- Clean *mci_amyloid* datafile
+Clean *mci_amyloid* datafile
  
 ```{r}
 mci_amyloid = 
@@ -200,6 +225,8 @@ mci_amyloid =
   
 mci_amyloid
 ```
+
+
 
 
 
