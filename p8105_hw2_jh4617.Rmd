@@ -161,9 +161,31 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is
   
 # problem 3
 
-```{r}
+Clean *MCI_baseline* data
 
+```{r}
+MCI_baseline = 
+  read.csv("data_mci/MCI_baseline.csv") |>
+  janitor::clean_names()|>
+  slice(-1)
+  
+head(MCI_baseline)
 ```
+
+There are `r nrow(MCI_baseline)` participants were recruited.
+
+Of the recruited participants, `r 
+develop_MCI = 
+  MCI_baseline |>
+  drop_na(age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period)
+  
+  nrow(develop_MCI)
+` develop MCI.
+
+The average baseline age is `r mean(pull(MCI_baseline, Age_at_study_baseline))`
+
+There are `r ` of women in the study are APOE4 carriers.
+
 
 
 
