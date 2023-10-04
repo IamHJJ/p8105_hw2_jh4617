@@ -207,11 +207,27 @@ mci_amyloid =
     names_to = "time",
     values_to = "amyloid_ratio" 
   )
-
 ```
 
+```{r echo = FALSE}
+amyloid = 
+  read.csv("data_mci/mci_amyloid.csv") |>
+  slice(-1) |>
+  magrittr::set_colnames(c("ID","baseline","time2","time4","time6","time8")) |>
+  janitor::clean_names() 
+```
+
+```{r}
+inner =
+  inner_join(MCI_baseline, amyloid)
+```
+
+There are `r nrow(MCI_baseline)-nrow(inner)` observations appears in baseline only.
+
+There are `r nrow(amyloid)-nrow(inner)` observations appears in amyloid only.
 
 
+There are `r nrow(inner)` observations appears in both baseline and amyloid datafile.
 
 
 
