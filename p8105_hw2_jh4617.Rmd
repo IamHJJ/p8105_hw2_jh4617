@@ -4,7 +4,7 @@ author: "Junjie Hu"
 date: "2023-10-01"
 output: github_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r}
@@ -158,6 +158,7 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is
   filter(year == "2021", month == "July") 
   sum(pull(gwynnda_trash_filtered, cigarette_butts)) `.
   
+  `r gwynnda_trash |> filter(year == "2021", month == "July") |> sum(cigarette_butts)`
   
 # problem 3
 
@@ -165,28 +166,40 @@ Clean *MCI_baseline* data
 
 ```{r}
 MCI_baseline = 
-  read.csv("data_mci/MCI_baseline.csv") |>
-  janitor::clean_names()|>
-  slice(-1)
-  
+  read.csv("data_mci/MCI_baseline.csv")|>
+  slice(-1) |>
+  magrittr::set_colnames(c("ID", "current_age", "sex", "education", "apoe4", "age_at_onset"))|>
+  janitor::clean_names() 
+
+
 head(MCI_baseline)
 ```
 
 There are `r nrow(MCI_baseline)` participants were recruited.
 
-Of the recruited participants, `r 
-develop_MCI = 
-  MCI_baseline |>
-  drop_na(age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period)
-  
-  nrow(develop_MCI)
-` develop MCI.
+Of the recruited participants, `r MCI_baseline |> filter(!is.na(age_at_onset)) |> nrow()`.
 
 The average baseline age is `r mean(pull(MCI_baseline, Age_at_study_baseline))`
 
 There are `r ` of women in the study are APOE4 carriers.
-
-
+ 
+ 
+ Clean *mci_amyloid* datafile
+ 
+```{r}
+mci_amyloid = 
+  read.csv("data_mci/mci_amyloid.csv") |>
+  slice(-1) |>
+  magrittr::set_colnames(c("ID","baseline","time2","time4","time6","time8")) |>
+  janitor::clean_names() |>
+  pivot_longer(
+    baseline:time8,
+    names_to = "time",
+    values_to = "amyloid_ratio" 
+  )
+  
+mci_amyloid
+```
 
 
 
