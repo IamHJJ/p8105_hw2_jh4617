@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
+```{r echo = FALSE }
 library(tidyverse)
 library(readxl)
 ```
@@ -37,8 +37,6 @@ pols =
                         "12" = "dec")) |>
   select(-prez_dem, -prez_gop, -day) |>
   arrange (year, month)
-    
-head(pols)
 ```
 
 Clean *snp* dataframe
@@ -68,11 +66,6 @@ snp =
   select(-day) |>
   arrange(year, month) |>
   mutate(year = as.character(year))
-
-head(snp)
-tail(snp)
-
-
 ```
 
 Clean *unemployment* dataframe
@@ -87,9 +80,6 @@ unemployment =
     values_to = "unemployment") |> 
   select(year, month, unemployment) |>
   mutate(year = as.character(year))
-
-head(unemployment)
-tail(unemployment)
 ```
 
 Merge *pols*, *snp*, and *unemployment* dataframes together
@@ -98,7 +88,6 @@ Merge *pols*, *snp*, and *unemployment* dataframes together
 problem1_df = left_join(pols, snp) |> 
   left_join(unemployment, copy = TRUE)
 
-problem1_df
 ```
 
 
@@ -113,9 +102,9 @@ mr.trash =
   read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 1) |>
   janitor::clean_names() |>
   mutate(homes_powered = weight_tons*500/30) |>
-  drop_na(dumpster)
+  drop_na(dumpster) |>
+  select (-x15, -x16)
 
-mr.trash
 ```
 
 Clean *professor_trash* and *gwynnada_trash* dataframe
@@ -125,10 +114,9 @@ professor_trash =
   read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 2) |>
   janitor::clean_names() |>
   mutate(homes_powered = weight_tons*500/30) |>
-  mutate(year = as.character(year)) |>
+  mutate(year = as.character(year))|>
   drop_na(dumpster)
 
-professor_trash
 
 gwynnda_trash = 
   read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 4) |>
@@ -137,7 +125,6 @@ gwynnda_trash =
   mutate(year = as.character(year)) |>
   drop_na(dumpster)
 
-gwynnda_trash
 ```
 
 Merage *mr.trash*, *professor_trash*, and *gwynnda_trash* dataframes
@@ -145,10 +132,8 @@ Merage *mr.trash*, *professor_trash*, and *gwynnda_trash* dataframes
 ```{r merge files}
 trash_df =
   full_join(mr.trash, professor_trash) |>
-  full_join(gwynnda_trash, copy = TRUE) |>
-  select(-x15, -x16)
+  full_join(gwynnda_trash, copy = TRUE) 
 
-trash_df
 ```
 
 There are `r nrow(mr.trash)` observations in the Mr.trash file.
@@ -222,8 +207,7 @@ mci_amyloid =
     names_to = "time",
     values_to = "amyloid_ratio" 
   )
-  
-mci_amyloid
+
 ```
 
 
