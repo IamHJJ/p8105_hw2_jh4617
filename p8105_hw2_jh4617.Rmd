@@ -136,7 +136,7 @@ trash_df =
 
 ```
 
-There are `r nrow(mr.trash)` observations and `r ncol(mr.trash)` variables in the Mr.trash file. There are `r nrow(professor_trash)` observations and `r ncol(professor_trash)` variables in the professor_trash file. There are `r nrow(gwynnda_trash)` observations and `r ncol(gwynnda_trash)` in the gwynnda_trash file. Then, three datafiles were merged in to one datafile called `trash_df`. There are `r nrow(trash_df)` observations and `r ncol(trash_df)` variables in merged data, including key variables `r names(trash_df)`. 
+There are `r nrow(mr.trash)` observations and `r ncol(mr.trash)` variables in the Mr.trash file. There are `r nrow(professor_trash)` observations and `r ncol(professor_trash)` variables in the professor_trash file. There are `r nrow(gwynnda_trash)` observations and `r ncol(gwynnda_trash)` in the gwynnda_trash file. Then, three datafiles were merged in to one datafile called `trash_df`. There are `r nrow(trash_df)` observations and `r ncol(trash_df)` variables in merged data, including key variables "`r names(trash_df)`". 
 
 The total weight of trash collected by Professor Trash Wheel is `r sum(pull(professor_trash, weight_tons))`. 
 
@@ -153,6 +153,8 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 is
 # problem 3
 
 Clean *MCI_baseline* data: excluding participants whose onset time occured before baseline
+
+First, import the MCI_baseline.csv by using the *read.csv* function. I find that the first row of the dataset is not useful data, hence I delete it using *slice* function. I also noticed that the column names is too complicated, thus I rename the column names. For the inclusion criteria of the study, I would want to exclude participants whose MCI onset date is prior than baseline. For clarification, I turned `sex` and `apoe4` into character variables. 
 
 ```{r}
 MCI_baseline = 
@@ -191,7 +193,7 @@ The average baseline age is `r mean(pull(MCI_baseline, current_age))` years.
 There are `r nrow(MCI_baseline_female_apoe) / nrow(MCI_baseline_female) *100` % of women in the study are APOE4 carriers in baseline data.
  
  
-Clean *mci_amyloid* datafile： make it to a longitudinal dataset
+Clean *mci_amyloid* datafile： make it to a longitudinal dataset using pivot_longer function
  
 ```{r}
 mci_amyloid = 
@@ -216,15 +218,11 @@ amyloid =
 inner =
   inner_join(MCI_baseline, amyloid)
 ```
-The `mci_amyloid` data has `r nrow(mci_amyloid)` observations and `r ncol(mci_amyloid)` variables that tell us about participant's amyloid 42/40 ratio in each visits.
+The `mci_amyloid` longitudinal dataset has `r nrow(mci_amyloid)` observations and `r ncol(mci_amyloid)` variables that tell us about participant's amyloid 42/40 ratio in each visits. In the `amyloid` dataset (not longitudinal) has `r nrow(amyloid)` observations and `r ncol(amyloid)` variables.
 
-There are `r nrow(MCI_baseline)-nrow(inner)` observations appears in baseline only.
+There are `r nrow(MCI_baseline)-nrow(inner)` observations appears in baseline only. There are `r nrow(amyloid)-nrow(inner)` observations appears in amyloid only.
 
-There are `r nrow(amyloid)-nrow(inner)` observations appears in amyloid only.
-
-There are `r nrow(inner)` observations appears in both baseline and amyloid datafile, including `r ncol(inner)` variables `r names(inner)`, and tells us about the amyloid ratio in each visit.
-
-
+The `inner` dataset is dataset that have merged the `amyloid` and `MCI_baseline` using inner_join function. There are `r nrow(inner)` observations and `r ncol(inner)` variables appear in both baseline and amyloid datafile, including key variables " `r names(inner)`", which tells us about the amyloid ratio in each visit. 
 
 
 Export file as csv：
