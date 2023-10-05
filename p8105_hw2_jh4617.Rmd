@@ -222,7 +222,12 @@ The `mci_amyloid` longitudinal dataset has `r nrow(mci_amyloid)` observations an
 
 There are `r nrow(MCI_baseline)-nrow(inner)` observations appears in baseline only. There are `r nrow(amyloid)-nrow(inner)` observations appears in amyloid only.
 
-The `inner` dataset is dataset that have merged the `amyloid` and `MCI_baseline` using inner_join function. There are `r nrow(inner)` observations and `r ncol(inner)` variables appear in both baseline and amyloid datafile, including key variables " `r names(inner)`", which tells us about the amyloid ratio in each visit. 
+```{r echo = FALSE}
+inner_long = 
+  inner_join(MCI_baseline, mci_amyloid) 
+```
+
+The `inner` dataset is dataset that have merged the `amyloid` and `MCI_baseline` using inner_join function. There are `r nrow(inner_long)` observations, `r nrow(inner)` participants and `r ncol(inner)` variables appear in both baseline and amyloid datafile, including key variables "`r names(inner)`", which tells us about the amyloid ratio in each visit. 
 
 
 Export file as csv：
